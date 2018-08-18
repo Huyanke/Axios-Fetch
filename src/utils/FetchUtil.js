@@ -1,6 +1,10 @@
 
 import axios from 'axios';
 
+axios.defaults.timeout = 5000;
+axios.defaults.baseURL ='';  //暂时配置不用
+
+
 /**
  *axios网络请求
  */
@@ -40,16 +44,45 @@ export const token =  sessionStorage.getItem('token');
  * @returns {Promise}
  */
 
- //需要加header头，不需要可删除
- let headers = {headers:{
-   'Accept': 'application/json',
-   'Content-Type': 'application/json',
-   'TransactionID': TransactionID,
-   'XClientIP': XClientIP,
-   'token': token
- }}
+
+ //http request 拦截器
+ axios.interceptors.request.use(
+   config => {
+
+    //设置请求头信息
+     config.headers = {
+       'Accept': 'application/json',
+       'Content-Type': 'application/json',
+       'TransactionID': TransactionID,
+       'XClientIP': XClientIP,
+       'token': token
+     }
+
+     return config;
+   },
+   error => {
+     return Promise.reject(err);
+   }
+ );
 
 
+ //http response 拦截器
+ axios.interceptors.response.use(
+   response => {
+     if(response.data.code == '11111111'){
+       router.push( path:"/login" )
+     }
+     return response;
+   },
+   error => {
+     if(error.status == 401) {
+       if(error.data.code == '999999999') {
+         alert('无访问数据权限！')
+         Remove();
+       }
+     return Promise.reject(error)
+   }
+ )
 
 export function get(url,params={}){
   return new Promise((resolve,reject) => {
@@ -64,7 +97,7 @@ export function get(url,params={}){
       }
     }
 
-    axios.get(url,headers,{
+    axios.get(url,{
       params:params
     })
     .then(response => {
@@ -83,10 +116,9 @@ export function get(url,params={}){
  * @param data
  * @returns {Promise}
  */
-
  export function post(url,data = {}){
    return new Promise((resolve,reject) => {
-     axios.post(url,data,headers)
+     axios.post(url,data)
           .then(response => {
            resolve(response.data);
           },err => {
