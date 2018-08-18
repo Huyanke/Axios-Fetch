@@ -66,23 +66,23 @@ export const token =  sessionStorage.getItem('token');
  );
 
 
- //http response 拦截器
- axios.interceptors.response.use(
-   response => {
-     if(response.data.code == '11111111'){
-       router.push( path:"/login" )
-     }
-     return response;
-   },
-   error => {
-     if(error.status == 401) {
-       if(error.data.code == '999999999') {
-         alert('无访问数据权限！')
+  //http response 拦截器
+  axios.interceptors.response.use(
+    response => {
+      if(response.data.code == '11111111'){
+            router.push('/login');
+      }
+      return response;
+    },
+    error => {
+      if(error.status == 401) {
+        if(error.data.code == '999999999') {
+          alert('无访问数据权限！')
 
-       }
-     return Promise.reject(error)
-   }
- )
+        }
+      return Promise.reject(error)
+    }
+     })
 
 export function get(url,params={}){
   return new Promise((resolve,reject) => {
