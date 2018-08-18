@@ -78,7 +78,7 @@ export const token =  sessionStorage.getItem('token');
      if(error.status == 401) {
        if(error.data.code == '999999999') {
          alert('无访问数据权限！')
-         Remove();
+
        }
      return Promise.reject(error)
    }
